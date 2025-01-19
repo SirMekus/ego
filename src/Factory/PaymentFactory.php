@@ -4,22 +4,23 @@ namespace Emmy\Ego\Factory;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Emmy\Ego\Gateway\Paystack;
+use Emmy\Ego\Gateway\Paystack\Paystack;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 
 class PaymentFactory implements PaymentGatewayInterface
 {
-    public $paymentGateway;
+    protected $paymentGateway;
 
     public function __construct(
         string|PaymentGatewayInterface $gateway="paystack",
-        string $key = "")
+        string|array $key = "")
 	{
         if($gateway instanceof PaymentGatewayInterface){
             $this->paymentGateway = $gateway;
         }
         else{
             $this->paymentGateway = match($gateway){
+                //subsequent matches can be added here. E.g, Flutterwave, Fincra, Stripe, etc
                 default => new Paystack(),
             };
         }
@@ -27,7 +28,7 @@ class PaymentFactory implements PaymentGatewayInterface
             $this->setKey($key);
         }
     }
-    public function getInstance():PaymentGatewayInterface
+    public function getGatewayInstance():PaymentGatewayInterface
     {
         return $this->paymentGateway;
     }
@@ -43,7 +44,7 @@ class PaymentFactory implements PaymentGatewayInterface
 			throw new \RuntimeException(sprintf('Missing %s method.'));
 		}
 	}
-    public function setKey(string $key): void
+    public function setKey(string|array $key): void
     {
         $this->paymentGateway->setKey($key);
     }
@@ -51,26 +52,21 @@ class PaymentFactory implements PaymentGatewayInterface
     {
         $this->paymentGateway->createConnection();
     }
-    public function pay(array $array): array
+    public function pay(array $array=[]): array
     {
         return $this->paymentGateway->pay($array);
     }
-    public function transfer(array $data): array
+    public function transfer(array $data=[]): array
     {
         return $this->paymentGateway->transfer($data);
     }
-    public function verifyPayment(array|string $array): array
+    public function verifyPayment(array|string $reference=[]): array
     {
-        return $this->paymentGateway->verify($array);
+        return $this->paymentGateway->verifyPayment($reference);
     }
     public function verifyWebhook(Request $request): void
     {
         $this->paymentGateway->verifyWebhook($request);
-    }
-
-    public function paymentHasBeenProcessed(array $array): bool
-    {
-        return $this->paymentGateway->paymentHasBeenProcessed($array);
     }
 
     public function handleWebhook(array $payload): array
@@ -85,7 +81,7 @@ class PaymentFactory implements PaymentGatewayInterface
 	{
         return $this->paymentGateway->getBanks();
     }
-    public function verifyAccountNumber(array $request): array
+    public function verifyAccountNumber(array $request=[]): array
 	{
         return $this->paymentGateway->verifyAccountNumber($request);
     }

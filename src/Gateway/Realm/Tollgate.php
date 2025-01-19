@@ -4,27 +4,20 @@ namespace Emmy\Ego\Gateway\Realm;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use Emmy\Ego\Exception\ConnectionException;
-use Illuminate\Http\Client\ConnectionException as IlluminateException;
 
 class Tollgate
-{
-	// use ChecksIfWebhookRequestIsLocal;
-	protected $secretKey;
+{	protected $secretKey;
 	public $builder = [];
     protected $http;
 
-	public function setKey(string $key):void
+	public function setKey(string|array $key):void
 	{
 		$this->secretKey =  $key;
 	}
 
 	public function createConnection():void
 	{
-		try {
-            $this->http = Http::withToken($this->secretKey);
-        } catch(IlluminateException $e) {
-			throw new ConnectionException($e->getMessage());
-        }
+		$this->http = Http::withToken($this->secretKey);
 	}
 
 	public function __call($name, $arguments)
@@ -38,5 +31,10 @@ class Tollgate
 		} else {
 			throw new \RuntimeException(sprintf('Missing %s method.'));
 		}
+	}
+
+	public function buildPayload(array|string $data=[]):array
+	{
+		return array_merge($this->builder, $data);
 	}
 }
