@@ -48,9 +48,13 @@ class PaymentFactory implements PaymentGatewayInterface
     {
         $this->paymentGateway->setKey($key);
     }
-    public function createConnection(): void
+    // public function createConnection(): void
+    // {
+    //     $this->paymentGateway->createConnection();
+    // }
+    public function prepareForPayment(array $array): array
     {
-        $this->paymentGateway->createConnection();
+        return $this->paymentGateway->pay($array);
     }
     public function pay(array $array=[]): array
     {

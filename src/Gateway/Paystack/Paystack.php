@@ -7,16 +7,62 @@ use Emmy\Ego\Exception\ApiException;
 use Emmy\Ego\Gateway\Realm\Tollgate;
 use Emmy\Ego\Gateway\Paystack\Trait\Http;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
+use Illuminate\Support\Facades\Http as IlluminateHttp;
 
 class Paystack extends Tollgate implements PaymentGatewayInterface
 {
 	use Http;
-	protected $paystack;
+	protected $secretKey;
 	public $baseUrl = 'https://api.paystack.co/';
 
-	public function __construct(public string $key = "")
+	public function __construct()
 	{
-		$this->secretKey ??= ($key ?? config('settings.paystack.secret_key'));
+		$this->secretKey ??= config('settings.paystack.secret_key');
+	}
+
+	public function setKey(string|array $key):void
+	{
+		$this->secretKey =  $key;
+	}
+
+	public function createConnection():void
+	{
+		$this->http = IlluminateHttp::withToken($this->secretKey);
+	}
+
+	public function prepareForPayment(array $data): array
+	{
+		$email = searchArray('email', $data);
+		$amount = searchArray('amount', $data);
+		$currency = searchArray('currency', $data);
+		$bearer = searchArray('bearer', $data);
+		$reference = searchArray('reference', $data);
+		$metadata = searchArray('metadata', $data);
+		$callbackUrl = searchArray('callback_url', $data) ?? searchArray('callbackUrl', $data);
+		$channels = searchArray('channels', $data);
+
+		$this->setEmail($email);
+		$this->setAmount($amount);
+		if($metadata){
+			$this->setMetadata($metadata);
+		}
+		if($callbackUrl){
+			$this->setCallbackUrl($callbackUrl);
+		}
+		if($channels){
+			$this->setChannels($channels);
+		}
+		if($reference){
+			$this->setReference($reference);
+		}
+		if($currency){
+			$this->setCurrency($currency);
+		}
+		if($bearer){
+			$this->setBearer($bearer);
+		}
+
+		return $this->builder;
 	}
 
 	public function getBanks(): array
@@ -35,10 +81,9 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 	{
 		$payload = $this->buildPayload($data);
 		$this->createConnection();
-		if(isset($payload['authorization_code'])){
-			return $this->payViaAuthorizationCode($payload);
-		}
-		return $this->payViaAuthorizationUrl($payload);
+		return isset($payload['authorization_code']) ? 
+		    $this->payViaAuthorizationCode($payload) :
+			$this->payViaAuthorizationUrl($payload);
 	}
 
 	protected function payViaAuthorizationUrl(array $data)
@@ -63,12 +108,6 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 			"message" => "Charge attempted",
 			'api_message' => $response,
 		];
-	}
-
-	public function getTransferRecipients()
-	{
-		$this->connect();
-		return $this->paystack->transferrecipient->getList();
 	}
 
 	public function createRecipient(array $postdata): array
@@ -122,7 +161,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 		if (is_array($paystackData)) {
 			if (isset($paystackData['data']['trxref']) || isset($paystackData['trxref'])) {
 				$paymentReference = isset($paystackData['data']['trxref']) ?? isset($paystackData['trxref']);
-				$status =  $this->get("transaction/verify/{$paymentReference}");
+				$status = $this->get("transaction/verify/{$paymentReference}");
 			}
 		}
 		else{

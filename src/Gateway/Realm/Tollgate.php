@@ -2,23 +2,11 @@
 namespace Emmy\Ego\Gateway\Realm;
 
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Http;
-use Emmy\Ego\Exception\ConnectionException;
 
 class Tollgate
-{	protected $secretKey;
+{	
 	public $builder = [];
     protected $http;
-
-	public function setKey(string|array $key):void
-	{
-		$this->secretKey =  $key;
-	}
-
-	public function createConnection():void
-	{
-		$this->http = Http::withToken($this->secretKey);
-	}
 
 	public function __call($name, $arguments)
 	{
