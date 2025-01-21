@@ -2,7 +2,6 @@
 
 namespace Emmy\Ego\Factory;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Emmy\Ego\Gateway\Paystack\Paystack;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
@@ -34,24 +33,16 @@ class PaymentFactory implements PaymentGatewayInterface
     }
     public function __call($name, $arguments)
 	{
-		if (str_starts_with($name, 'set')) {
-			$property = substr($name, 3);
-
-			$property = Str::snake($property);
-
-			$this->paymentGateway->builder[$property] = $arguments[0];
-		} else {
-			throw new \RuntimeException(sprintf('Missing %s method.'));
-		}
+        $this->paymentGateway->$name($arguments[0]);
 	}
     public function setKey(string|array $key): void
     {
         $this->paymentGateway->setKey($key);
     }
-    // public function createConnection(): void
-    // {
-    //     $this->paymentGateway->createConnection();
-    // }
+    public function getPayload():array
+	{
+		return $this->paymentGateway->getPayload();
+	}
     public function prepareForPayment(array $array): array
     {
         return $this->paymentGateway->pay($array);
@@ -72,7 +63,6 @@ class PaymentFactory implements PaymentGatewayInterface
     {
         $this->paymentGateway->verifyWebhook($request);
     }
-
     public function handleWebhook(array $payload): array
 	{
         return $this->paymentGateway->handleWebhook($payload);

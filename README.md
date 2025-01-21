@@ -26,6 +26,12 @@ composer require sirmekus/ego
  ```
  This library tends to obscure the underlying payment gateway by providing, instead, a "factory" for you to interact with. This "factory" also contains the common methods (interface) all the available payment gateways (here) should have so you can still interact with the payment gateway. 
 
+To publish the default config file to customize, run:
+
+ ```bash
+ php artisan vendor:publish --provider="Emmy\Ego\Provider\EgoProvider"
+ ```
+
  Example usage:
 
  ```php
@@ -70,6 +76,9 @@ $response = $paymentFactory->pay($data);
 
     //To run a transfer/withdrawal transaction based on the payment gateway
     public function transfer(array $data): array;
+
+    //If the magic method is used to craft a payload/request, the crafted payload is returned
+    public function getPayload():array;
 ```
 
 All of these methods are guaranteed to be accessible regardless of the payment gateway in use. However, the user should know what payload parameters his/her chosen payment gateway expects and pass that parameter to the library when neccessary.

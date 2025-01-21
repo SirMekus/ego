@@ -13,7 +13,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 {
 	use Http;
 	protected $secretKey;
-	public $baseUrl = 'https://api.paystack.co/';
+	protected $baseUrl = 'https://api.paystack.co/';
 
 	public function __construct()
 	{

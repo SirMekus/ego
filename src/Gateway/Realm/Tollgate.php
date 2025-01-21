@@ -5,7 +5,7 @@ use Illuminate\Support\Str;
 
 class Tollgate
 {	
-	public $builder = [];
+	protected $builder = [];
     protected $http;
 
 	public function __call($name, $arguments)
@@ -24,5 +24,10 @@ class Tollgate
 	public function buildPayload(array|string $data=[]):array
 	{
 		return array_merge($this->builder, $data);
+	}
+
+	public function getPayload():array
+	{
+		return $this->builder;
 	}
 }
