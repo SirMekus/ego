@@ -20,10 +20,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Emmy\\Ego\\EgoProvider"
+                "Emmy\\Ego\\Provider\\EgoProvider"
             ]
         }
     },
+    "minimum-stability": "dev",
     "require": {
         "php": "^8.0"
     }

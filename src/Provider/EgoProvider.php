@@ -20,7 +20,7 @@ class EgoProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__.'/../Config/ego.php' => config_path('ego.php'),
+            __DIR__.'/../config/ego.php' => config_path('ego.php'),
         ]);
     }
 }
