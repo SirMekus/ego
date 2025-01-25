@@ -16,6 +16,7 @@ For something more complex, you should consider using your preferred gateway's S
     - [Paystack](#paystack) 
         - [Special Cases](#special-cases) 
     - [Flutterwave](#flutterwave) 
+- [Webhook Strategy](#webhook-strategy) 
 - [Contributing](#contributing)
 
 > **This documentation will constantly be updated as more interfaces/methods or payment gateways are added.**
@@ -196,7 +197,38 @@ Once you know the typical request parameters required by [Flutterwave](https://d
 The following methods are available for Flutterwave in this package:
 - All the methods defined in the interface
 
+## Webhook Strategy
+Since this package implements methods that verify/handle webhook requests/payloads, one way of using the same route for all possible payment gateway you support is shown below:
+### Step 1: Create a dynamic route
+```php
+//web.php
+...
+//Give it any name but observe the 'dynamic' path there.
+Route::post('money/na/water/webhook/{gateway}', App\Http\Controllers\Dashboard\WebhookController::class)->name('payment.webhook');
+```
+
+The value assigned to the dynamic part of the URL above should match with any of the supported payment gateways which can be gotten in the `ego.php` config file (in the 'providers' section).
+
+### Step 2: Handle the payload
+```php
+...
+class WebhookController extends Controller
+{
+    public function __invoke(Request $request, string $gateway)
+    {
+        $gateway = new PaymentFactory($gateway);
+        $payload = $request->json()->all();
+        $gateway->verifyWebhook($request);
+
+        //handle the payload. Ideally, via throwing an event.
+        return response()->json();
+    }
+}
+```
+
+With this, you now have a single route that can handle any webhook. So if you move from Gateway A to B, you won't have to worry about creating a new route or implementing a new gateway.
+
 
 ## Contributing
 
-Please check the **'contrib'** directory for more information.
+Please check the **'contrib'** directory for more information. I really appreciate you for doing this.
