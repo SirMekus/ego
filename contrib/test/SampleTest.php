@@ -20,7 +20,7 @@ class PaystackPaymentTest extends TestCase
     #[Test]
     public function can_make_payment(): void
     {
-        $paymentFactory = new PaymentFactory('your gateway', config('path.to.your.key'));
+        $paymentFactory = new PaymentFactory();
         $data = [
             'amount' => 1000,
             'email' => 'Z0m0C@example.com',
@@ -35,7 +35,7 @@ class PaystackPaymentTest extends TestCase
     #[Test]
     public function cannot_make_payment(): void
     {
-        $paymentFactory = new PaymentFactory('your gateway', config('path.to.your.key'));
+        $paymentFactory = new PaymentFactory('your gateway');
 
         try {
             $paymentFactory->pay([

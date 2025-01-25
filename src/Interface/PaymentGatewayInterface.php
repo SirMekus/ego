@@ -27,7 +27,7 @@ interface PaymentGatewayInterface
     public function handleWebhook(array $request): array;
 
     //To fetch a list of available banks the underlying payment gateway supports
-    public function getBanks(): array;
+    public function getBanks(string $bankcode=""): array;
 
     //Verifies an account number
     public function verifyAccountNumber(array $request): array;

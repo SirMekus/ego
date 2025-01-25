@@ -3,7 +3,6 @@
 namespace Emmy\Ego\Exception;
 
 use Exception;
-// use Illuminate\Http\Client\ConnectionException as CE;
 
 class InvalidRecipientException extends Exception
 {
@@ -15,7 +14,6 @@ class InvalidRecipientException extends Exception
             'message' => $message['message'],
             'api_message' => $message,
         ];
-        // dd(json_encode($newMessage));
         parent::__construct(json_encode($newMessage), 412, $previous);
     }
 }

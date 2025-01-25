@@ -3,25 +3,31 @@
 namespace Emmy\Ego\Factory;
 
 use Illuminate\Http\Request;
-use Emmy\Ego\Gateway\Paystack\Paystack;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
+use Emmy\Ego\Exception\UnspportedGatewayException;
 
 class PaymentFactory implements PaymentGatewayInterface
 {
     protected $paymentGateway;
 
     public function __construct(
-        string|PaymentGatewayInterface $gateway="paystack",
+        string|PaymentGatewayInterface $gateway="",
         string|array $key = "")
 	{
         if($gateway instanceof PaymentGatewayInterface){
             $this->paymentGateway = $gateway;
         }
         else{
-            $this->paymentGateway = match($gateway){
-                //subsequent matches can be added here. E.g, Flutterwave, Fincra, Stripe, etc
-                default => new Paystack(),
-            };
+            if($gateway){
+                $gateway = config("ego.providers.$gateway");
+                if(!$gateway){
+                    throw new UnspportedGatewayException('Gateway not supported. If you can, please consider contributing to this package to enable it here.');
+                }
+            }
+            else{
+                $gateway = config("ego.providers.default");
+            }
+            $this->paymentGateway = new $gateway();
         }
         if($key){
             $this->setKey($key);
@@ -71,9 +77,9 @@ class PaymentFactory implements PaymentGatewayInterface
 	{
         return $this->paymentGateway->verifyByReference($payload);
     }
-    public function getBanks(): array
+    public function getBanks(string $countryCode=""): array
 	{
-        return $this->paymentGateway->getBanks();
+        return $this->paymentGateway->getBanks($countryCode);
     }
     public function verifyAccountNumber(array $request=[]): array
 	{

@@ -6,7 +6,6 @@ use Illuminate\Support\Str;
 class Tollgate
 {	
 	protected $builder = [];
-    protected $http;
 
 	public function __call($name, $arguments)
 	{

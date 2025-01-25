@@ -5,9 +5,8 @@ namespace Emmy\Ego\Gateway\Paystack;
 use Illuminate\Http\Request;
 use Emmy\Ego\Exception\ApiException;
 use Emmy\Ego\Gateway\Realm\Tollgate;
-use Emmy\Ego\Gateway\Paystack\Trait\Http;
+use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
-use Illuminate\Support\Facades\Http as IlluminateHttp;
 
 class Paystack extends Tollgate implements PaymentGatewayInterface
 {
@@ -17,17 +16,12 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 
 	public function __construct()
 	{
-		$this->secretKey ??= config('settings.paystack.secret_key');
+		$this->secretKey ??= config('ego.credentials.paystack.secret_key');
 	}
 
 	public function setKey(string|array $key):void
 	{
 		$this->secretKey =  $key;
-	}
-
-	public function createConnection():void
-	{
-		$this->http = IlluminateHttp::withToken($this->secretKey);
 	}
 
 	public function prepareForPayment(array $data): array
@@ -37,7 +31,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 		$currency = searchArray('currency', $data);
 		$bearer = searchArray('bearer', $data);
 		$reference = searchArray('reference', $data);
-		$metadata = searchArray('metadata', $data);
+		$metadata = searchArray('metadata', $data) ?? searchArray('metaData', $data);
 		$callbackUrl = searchArray('callback_url', $data) ?? searchArray('callbackUrl', $data);
 		$channels = searchArray('channels', $data);
 
@@ -65,7 +59,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 		return $this->builder;
 	}
 
-	public function getBanks(): array
+	public function getBanks(string $countryCode=""): array
 	{
 		$response = $this->get('bank');
 		return $response;

@@ -1,30 +1,33 @@
 ## About Ego
 
-Ego ("money") is an all-in-one payment gateway library for the PHP (Laravel) community. It is designed to bring together all the possible payment gateways under one "umbrella" via a defined set of interface covering regular/day-to-day business/user goals.
+Ego ("money") is an all-in-one payment gateway library for the PHP (Laravel) community. It is designed to bring together all the possible payment gateways under one "umbrella" via a defined set of interface covering regular/day-to-day business/user goals. C
 
-With this library, you don't need to worry about switching between different payment gateways; just check it up here, and if it's available, via the guaranteed set of interfaces, use it straight up.
+With this library, you don't need to worry about switching between different payment gateways; just check it up here, and if it's available, via the guaranteed set of interfaces, use it straight up as it covers simple everyday use cases. 
 
-> For this, I strongly encourage contributions, please. If you have ever worked with a particular payment gateway, please contribute by adding it here for other developers to use. Thank you.
+For something more complex, you should consider using your preferred gateway's SDK (if available), extending our implementation or creating a new implementation entirely for your use.
+
+> For this, I strongly encourage contributions, please. If you have ever worked with/on a particular payment gateway, please contribute by adding it here for other developers to use. Thank you.
 
 # Table of Contents
 
 - [Getting Started](#getting-started)
-- [Available Interfaces](#available-interfaces)
+- [Available Interface Methods](#available-interface-methods)
 - Available (Underlying) Gateway(s)
     - [Paystack](#paystack) 
         - [Special Cases](#special-cases) 
+    - [Flutterwave](#flutterwave) 
 - [Contributing](#contributing)
 
 > **This documentation will constantly be updated as more interfaces/methods or payment gateways are added.**
 
 ## Getting Started
 
-Install the package with like so:
+Install the package like so:
 
  ```bash
 composer require sirmekus/ego
  ```
- This library tends to obscure the underlying payment gateway by providing, instead, a "factory" for you to interact with. This "factory" also contains the common methods (interface) all the available payment gateways (here) should have so you can still interact with the payment gateway. 
+ This library obscures the underlying payment gateway by providing, instead, a "factory" for you to interact with. This "factory" also contains the common methods (interface) all the available payment gateways (here) should have so you can still interact with the payment gateway. 
 
 To publish the default config file to customize, run:
 
@@ -45,9 +48,13 @@ To publish the default config file to customize, run:
 $response = $paymentFactory->pay($data);
  ```
 
- The `PaymentFactory` class expects two optional parameters: a `PaymentGateway` interface (or string indicating which payment gateway to use) and a "configuration" key which specifies how the underlying payment gateway shall be configured to hit the appropriate API. If not specified, the default - gotten from the config file - is used.
+ The `PaymentFactory` class accepts two optional parameters: 
+ - A `PaymentGateway` interface (or string indicating which payment gateway to use)
+ - A "configuration" key which specifies how the underlying payment gateway shall be configured (for authentication) to hit the appropriate API. 
+ 
+ If none is specified, the default - gotten from the config file - is used.
 
-## Available Interfaces
+## Available Interface Methods
 
 ```php
     //Sets the configuration for the underlying payment gateway (if necessary)
@@ -69,7 +76,7 @@ $response = $paymentFactory->pay($data);
     public function handleWebhook(array $request): array;
 
     //To fetch a list of available banks the underlying payment gateway supports
-    public function getBanks(): array;
+    public function getBanks(string $countryCode=""): array;
 
     //Verifies an account number
     public function verifyAccountNumber(array $request): array;
@@ -98,7 +105,7 @@ Methods starting with the `set` keyword are 'magical', and represents a 'payload
 
 Alternatively, if you already have an array (say from submitted form data), instead of building the payload, you can just dump it into the library via the `prepareForPayment()` method and the library will automatically build it for you. Even if the array is nested, it will fetch the first matching key/value pair required to create a request payload. This means that a model (that has been turned into an array can be passed to it as well).
 
->NB: How the payload is built is dependent on the underlying payment gateway. A gateway may require 5 parameters while the contributor of the particular payment gateway feature (in this package) may just cater for 2. If the remaining 3 are important, it is recommended you manually set the payload instead.
+>NB: How the payload is built is dependent on the underlying payment gateway. A gateway may require 5 parameters while the contributor of the particular payment gateway feature (in this package) may just cater for 2 in the `prepareForPayment()` method. If the remaining 3 are important, it is recommended you manually set the payload instead.
 
  E.g:
 ```php 
@@ -110,7 +117,7 @@ $response = $paymentFactory->pay();
 
 The method wil extract the 'minimal' request parameters (or payload) needed to interact with the API endpoint of your preferred service provider or payment gateway.
 
-However, it is possible that you might want to interact with the underlying payment gateway class directly. This may be because the payment gateway class (integrated in this library) adds some method(s) that may not be available in the general interface above. 
+However, it is possible that you might want to interact with the underlying payment gateway class directly. This may be because the payment gateway class (integrated in this package) adds some method(s) that may not be available in the general interface above. 
 
 For instance, if the underlying payment gateway class has a method `createInvoice` which is not defined in the above interface, it can't be accessed directly from the `PaymentFactory` class. You can do this like so instead:
 
@@ -120,6 +127,33 @@ $gateway = $paymentFactory->getGatewayInstance();
 //Now you can use the actual payment gateway class
 $gateway->createInvoice();
 //continue operation
+```
+
+If you have a gateway class you already use with some important methods you may have already created, you can swap our implementation with yours in the 'providers' section of the **ego.php** config file. But it must implement the **'PaymentGatewayInterface'**. One way to do it is to extend our own class.
+
+The typical structure of the **ego.php** config file is shown below:
+
+```php
+return [
+    //Your app's default payment gateway. It must already exist in the 'providers' section below, and has its credentials setup as required.
+    'default' => 'paystack',
+
+    'credentials' => [
+        'paystack' => [
+            'secret_key' => env('PAYSTACK_SECRET_KEY'),
+            'public_key' => env('PAYSTACK_PUBLIC_KEY'),
+        ],
+        'flutterwave' => [
+            'secret_key' => env('FLUTTERWAVE_SECRET_KEY'),
+            'public_key' => env('FLUTTERWAVE_PUBLIC_KEY'),
+        ],
+    ],
+
+    'providers' => [
+        'paystack' => Emmy\Ego\Gateway\Paystack\Paystack::class,
+        'flutterwave' => Emmy\Ego\Gateway\Flutterwave\Flutterwave::class,
+    ],
+];
 ```
 
 # Available (Underlying) Payment Gateway(s)
@@ -156,9 +190,13 @@ This process has been taken care of already when you simply use the `transfer()`
 
 However, if you already have the 'transfer recipient code' created, simply pass it as inside your payload and the package will extract it automatically. Now instead of first creating the transfer recipient on your behalf, it will just make the 'transfer' directly.
 
+## Flutterwave
+Once you know the typical request parameters required by [Flutterwave](https://developer.flutterwave.com/reference/introduction-1), you can just plug them in directly into the appropriate method discussed above and use it straight away.
+
+The following methods are available for Flutterwave in this package:
+- All the methods defined in the interface
+
 
 ## Contributing
 
-Thank you for considering contributing to this project/library. With your support, we can have a single package with over 100+ payment integrations from a single platform. This means less work for developers (as they will only need to worry about getting their authentication credentials :wink:).
-
-Please review the available methods in the interface, implement them and extend the **`Tollgate`** class. That's all. Don't forget to update this documentation as well...and write extensive test cases to make sure all is well.
+Please check the **'contrib'** directory for more information.
