@@ -9,24 +9,36 @@ use Illuminate\Support\Facades\Http as IlluminateHttp;
 trait Http
 {
     protected $http;
-	public function createConnection():void
+	public function createConnection(bool $asForm=false):void
 	{
-		$this->http = IlluminateHttp::withToken($this->secretKey);
+		if(!$this->http){
+			if($asForm){
+				$this->http = IlluminateHttp::withToken($this->secretKey)->asForm();
+			}
+			else{
+				$this->http = IlluminateHttp::withToken($this->secretKey);
+			}
+		}
 	}
-	public function post(string $endpoint='', array $data = [], array $headers = []): array
+
+	public function post(
+		string $path='', 
+		array $data = [], 
+		array $headers = []
+		): array
 	{
         $this->createConnection();
-		$response = $this->http->withHeaders($headers)->post($this->baseUrl . $endpoint, $data);
+		$response = $this->http->withHeaders($headers)->post($this->baseUrl . $path, $data);
 		$response = json_decode($response, true);
         $this->checkForError($response);
 		
 		return $response;
 	}
 
-    public function get(string $endpoint='', array $data = [], array $headers = []): array
+    public function get(string $path='', array $data = [], array $headers = []): array
 	{
         $this->createConnection();
-		$response = $this->http->withHeaders($headers)->get($this->baseUrl . $endpoint, $data);
+		$response = $this->http->withHeaders($headers)->get($this->baseUrl . $path, $data);
 		$response = json_decode($response, true);
         $this->checkForError($response);
 		

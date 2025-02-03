@@ -86,12 +86,6 @@ class Flutterwave extends Tollgate implements PaymentGatewayInterface
 		];
 	}
 
-	public function createRecipient(array $postdata): array
-	{
-		$result = $this->post('transferrecipient', $postdata);
-		return $result;
-	}
-
 	public function transfer(array $data=[]): array
 	{
 		$payload = $this->buildPayload($data);
@@ -119,9 +113,9 @@ class Flutterwave extends Tollgate implements PaymentGatewayInterface
 				isset($payload['reference']) || 
 				isset($payload['ref'])) {
 				$paymentReference = $payload['data']['trxref'] ?? 
-				$paystackData['data']['id']??
-				$paystackData['trxref'] ?? 
-				$paystackData['reference'] ?? 
+				$payload['data']['id']??
+				$payload['trxref'] ?? 
+				$payload['reference'] ?? 
 				$payload['ref'];
 			}
 		}
@@ -149,24 +143,6 @@ class Flutterwave extends Tollgate implements PaymentGatewayInterface
 				'tx_ref'=>$reference
 			],
 			$header);
-	}
-
-	/**
-	 * Takes the webhook payload, verifies that the webhook is legit then return a different payload structure 
-	 * gotten via the payment verification endpoint.
-	 */
-	public function handleWebhook(array $payload): array
-	{
-		$gatewayData = [];
-		if ($payload['event'] === 'charge.success') {
-			$gatewayData = $this->verifyPayment($payload['data']['reference']);
-			return $gatewayData;
-		}
-		if ($payload['event'] === 'transfer.success') {
-			$gatewayData = $payload;
-			return $gatewayData;
-		}
-		throw new ApiException('Flutterwave Webhook verification failed. ');
 	}
 
     public function checkForError(array $response):void

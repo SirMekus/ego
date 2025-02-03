@@ -4,6 +4,8 @@ Ego ("money") is an all-in-one payment gateway library for the PHP (Laravel) com
 
 With this library, you don't need to worry about switching between different payment gateways; just check it up here, and if it's available, via the guaranteed set of interfaces, use it straight up as it covers simple everyday use cases. 
 
+**Note that the expected parameters required by your gateway of choice, when making a request via this package, should be sent as well**.
+
 For something more complex, you should consider using your preferred gateway's SDK (if available), extending our implementation or creating a new implementation entirely for your use.
 
 > For this, I strongly encourage contributions, please. If you have ever worked with/on a particular payment gateway, please contribute by adding it here for other developers to use. Thank you.
@@ -16,6 +18,7 @@ For something more complex, you should consider using your preferred gateway's S
     - [Paystack](#paystack) 
         - [Special Cases](#special-cases) 
     - [Flutterwave](#flutterwave) 
+    - [Stripe](#stripe) 
 - [Webhook Strategy](#webhook-strategy) 
 - [Contributing](#contributing)
 
@@ -195,6 +198,13 @@ However, if you already have the 'transfer recipient code' created, simply pass 
 Once you know the typical request parameters required by [Flutterwave](https://developer.flutterwave.com/reference/introduction-1), you can just plug them in directly into the appropriate method discussed above and use it straight away.
 
 The following methods are available for Flutterwave in this package:
+- All the methods defined in the interface
+
+
+## Stripe
+Once you know the typical request parameters required by [Stripe](https://docs.stripe.com/api?lang=curl), you can just plug them in directly into the appropriate method discussed above and use it straight away.
+
+The following methods are available for Stripe in this package:
 - All the methods defined in the interface
 
 ## Webhook Strategy

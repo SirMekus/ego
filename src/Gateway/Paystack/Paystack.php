@@ -163,22 +163,4 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 		}
 		return $status;
 	}
-
-	/**
-	 * Takes the webhook payload, verifies that the webhook is legit then return a different payload structure 
-	 * gotten via the payment verification endpoint.
-	 */
-	public function handleWebhook(array $payload): array
-	{
-		$gatewayData = [];
-		if ($payload['event'] === 'charge.success') {
-			$gatewayData = $this->verifyPayment($payload['data']['reference']);
-			return $gatewayData;
-		}
-		if ($payload['event'] === 'transfer.success') {
-			$gatewayData = $payload;
-			return $gatewayData;
-		}
-		throw new ApiException('Paystack Webhook verification failed. ');
-	}
 }

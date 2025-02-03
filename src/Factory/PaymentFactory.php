@@ -33,7 +33,7 @@ class PaymentFactory implements PaymentGatewayInterface
             $this->setKey($key);
         }
     }
-    public function getGatewayInstance():PaymentGatewayInterface
+    public function getGatewayInstance()
     {
         return $this->paymentGateway;
     }
@@ -51,7 +51,7 @@ class PaymentFactory implements PaymentGatewayInterface
 	}
     public function prepareForPayment(array $array): array
     {
-        return $this->paymentGateway->pay($array);
+        return $this->paymentGateway->prepareForPayment($array);
     }
     public function pay(array $array=[]): array
     {
@@ -68,14 +68,6 @@ class PaymentFactory implements PaymentGatewayInterface
     public function verifyWebhook(Request $request): void
     {
         $this->paymentGateway->verifyWebhook($request);
-    }
-    public function handleWebhook(array $payload): array
-	{
-        return $this->paymentGateway->handleWebhook($payload);
-    }
-    public function handlePaymentVerification(string $payload): array
-	{
-        return $this->paymentGateway->verifyByReference($payload);
     }
     public function getBanks(string $countryCode=""): array
 	{

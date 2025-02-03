@@ -23,9 +23,6 @@ interface PaymentGatewayInterface
     //To verify a webhook. You can use it as-is in your application's webhook endpoint. If the webhook is valid, it will continue to execute your script else it fails with a 404.
     public function verifyWebhook(Request $request): void;
 
-    //After verifying your webhook, it can then run another verification of payment. The value it returns is dependent on the underlying payment gateway.
-    public function handleWebhook(array $request): array;
-
     //To fetch a list of available banks the underlying payment gateway supports
     public function getBanks(string $bankcode=""): array;
 
