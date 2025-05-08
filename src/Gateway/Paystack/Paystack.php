@@ -3,7 +3,6 @@
 namespace Emmy\Ego\Gateway\Paystack;
 
 use Illuminate\Http\Request;
-use Emmy\Ego\Exception\ApiException;
 use Emmy\Ego\Gateway\Realm\Tollgate;
 use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
@@ -143,18 +142,14 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 		if ($signature !== hash_hmac('sha512', $request->getContent(), $this->secretKey))
 			abort(401, "Webhook not verified");
 
-		// parse event (which is json string) as object
-		// Do something - that will not take long - with $event
-		// PaystackEvent::dispatch(json_decode($input));
-
-		exit();
+		// User can do whatever at this junction
 	}
 
 	public function verifyPayment(array|string $paystackData): array
 	{	
 		if (is_array($paystackData)) {
 			if (isset($paystackData['data']['trxref']) || isset($paystackData['trxref'])) {
-				$paymentReference = isset($paystackData['data']['trxref']) ?? isset($paystackData['trxref']);
+				$paymentReference = $paystackData['data']['trxref'] ?? isset($paystackData['trxref']);
 				$status = $this->get("transaction/verify/{$paymentReference}");
 			}
 		}

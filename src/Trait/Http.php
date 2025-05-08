@@ -51,7 +51,7 @@ trait Http
 	 */ 
     public function checkForError(array $response):void
     {
-        if ($response['status'] && $response['status'] != true) {
+        if (isset($response['status']) && $response['status'] != true) {
 			$error = json_encode($response);
 			switch ($response['code']) {
 				case "transaction_not_found":

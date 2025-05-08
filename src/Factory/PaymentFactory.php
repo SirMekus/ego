@@ -25,7 +25,7 @@ class PaymentFactory implements PaymentGatewayInterface
                 }
             }
             else{
-                $gateway = config("ego.providers.default");
+                $gateway = config("ego.providers.".config("ego.default"));
             }
             $this->paymentGateway = new $gateway();
         }

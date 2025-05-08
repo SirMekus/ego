@@ -11,7 +11,7 @@ class ApiException extends Exception
         $message = json_decode($errorMessage, true);
         $newMessage = [
             'status' => false,
-            'message' => ($message && is_array($message)) ? $message['message'] : $errorMessage,
+            'message' => ($message && is_array($message)) ? ($message['message'] ?? null) : $errorMessage,
             'api_message' => $message ?? $errorMessage,
         ];
         parent::__construct(json_encode($newMessage), 412, $previous);
