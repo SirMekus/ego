@@ -117,6 +117,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 			"source" => searchArray('source', $payload) ?? "balance",
 			"amount" => searchArray('amount', $payload),
 			"reason" => searchArray('reason', $payload) ?? searchArray('description', $payload),
+			"reference" => searchArray('reference', $payload),
 		];
 		if(isset($payload['recipient_code'])){
 			$postData['recipient'] = $payload['recipient_code'];
