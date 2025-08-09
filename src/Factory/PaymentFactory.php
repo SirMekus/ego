@@ -39,7 +39,7 @@ class PaymentFactory implements PaymentGatewayInterface
     }
     public function __call($name, $arguments)
 	{
-        $this->paymentGateway->$name($arguments[0]);
+        $this->paymentGateway->$name(...$arguments);
 	}
     public function setKey(string|array $key): void
     {
