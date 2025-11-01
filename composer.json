@@ -1,31 +1,35 @@
 {
-    "name": "sirmekus/ego",
-    "type": "library",
-    "description": "This package aims to simplify payment gateway processing for all mobile/web applications using a common interface. For this, contributors are highly welcomed to help create more payment gateways features that other users can use from a single library.",
-    "license": "MIT",
-    "autoload": {
-        "files": [
-            "src/helpers.php"
-        ],
-        "psr-4": {
-            "Emmy\\Ego\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "SirMekus (Emmy Boy)",
-            "email": "mekus600@gmail.com"
-        }
+  "name": "sirmekus/ego",
+  "type": "library",
+  "description": "This package aims to simplify payment gateway processing for all mobile/web applications using a common interface. For this, contributors are highly welcomed to help create more payment gateways features that other users can use from a single library.",
+  "license": "MIT",
+  "autoload": {
+    "files": [
+      "src/helpers.php"
     ],
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Emmy\\Ego\\Provider\\EgoProvider"
-            ]
-        }
-    },
-    "minimum-stability": "stable",
-    "require": {
-        "php": "^8.0"
+    "psr-4": {
+      "Emmy\\Ego\\": "src/"
     }
+  },
+  "authors": [
+    {
+      "name": "SirMekus (Emmy Boy)",
+      "email": "mekus600@gmail.com"
+    },
+    {
+      "name": "NDUAGOZIEM",
+      "email": "anduagoziem@gmail.com"
+    }
+  ],
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Emmy\\Ego\\Provider\\EgoProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "require": {
+    "php": "^8.0"
+  }
 }
