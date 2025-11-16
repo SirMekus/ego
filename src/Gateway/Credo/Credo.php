@@ -2,6 +2,7 @@
 
 namespace Emmy\Ego\Gateway\Credo;
 
+use Emmy\Ego\Exception\UnsupportedGatewayMethodException;
 use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Gateway\Realm\Tollgate;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
@@ -23,7 +24,7 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function getBanks(string $bankcode = ''): array
     {
-        return [];
+        throw new UnsupportedGatewayMethodException("Method not Supported. Credo does not support this feature.");
     }
 
     /**
@@ -116,7 +117,7 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function transfer(array $data): array
     {
-        return [];
+        throw new UnsupportedGatewayMethodException("Method not Supported. Credo does not support this feature.");
     }
 
     /**
@@ -124,19 +125,42 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function verifyAccountNumber(array $request): array
     {
-        return [];
+        throw new UnsupportedGatewayMethodException("Method not Supported. Credo does not support this feature.");
     }
 
     /**
      * @inheritDoc
      */
-    public function verifyPayment(array|string $array): array
+    public function verifyPayment(array|string $credoData): array
     {
-        return [];
+        if (is_array($credoData)) {
+            if (isset($credoData['data']['transRef']) || isset($credoData['transRef'])) {
+                $transRef = $credoData['data']['transRef'] ?? isset($credoData['transRef']);
+                $status = $this->get("transaction/{$transRef}/verify/");
+            }
+        } else {
+            $status = $this->get("transaction/{$credoData}/verify");
+        }
+        return $status;
     }
 
     /**
      * @inheritDoc
      */
-    public function verifyWebhook(\Illuminate\Http\Request $request): void {}
+    public function verifyWebhook(\Illuminate\Http\Request $request): void
+    {
+        $signature = $request->header('x-credo-signature');
+        if (
+            (strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') ||
+            !$signature
+        )
+            abort(401);
+
+        // validate event, do all at once to avoid timing attack
+        if ($signature !== hash_hmac('sha512', $request->getContent(), $this->secretKey))
+            abort(401, "Webhook not verified");
+
+        // User can do whatever at this juncture.
+
+    }
 }

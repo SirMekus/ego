@@ -2,7 +2,7 @@
 
 return [
     //Your app's default payment gateway. It must already exist in the 'providers' section below, and has its credentials setup as required.
-    'default' => 'credo',
+    'default' => 'paystack',
 
     'credentials' => [
         'paystack' => [
