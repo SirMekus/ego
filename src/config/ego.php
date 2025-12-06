@@ -8,6 +8,9 @@ return [
         'paystack' => [
             'secret_key' => env('PAYSTACK_SECRET_KEY'),
         ],
+        'credo' => [
+            'secret_key' => env('CREDO_SECRET_KEY'),
+        ],
         'flutterwave' => [
             'secret_key' => env('FLUTTERWAVE_SECRET_KEY'),
         ],
@@ -23,5 +26,6 @@ return [
         'paystack' => Emmy\Ego\Gateway\Paystack\Paystack::class,
         'flutterwave' => Emmy\Ego\Gateway\Flutterwave\Flutterwave::class,
         'stripe' => Emmy\Ego\Gateway\Stripe\Stripe::class,
+        "credo" => Emmy\Ego\Gateway\Credo\Credo::class
     ],
 ];
