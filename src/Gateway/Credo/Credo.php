@@ -2,7 +2,7 @@
 
 namespace Emmy\Ego\Gateway\Credo;
 
-use Emmy\Ego\Exception\UnsupportedGatewayMethodException;
+use Emmy\Ego\Exception\UnsupportedGatewayMethodExeption;
 use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Gateway\Realm\Tollgate;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
@@ -24,7 +24,7 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function getBanks(string $bankcode = ''): array
     {
-        throw new UnsupportedGatewayMethodException("Method not Supported. Credo does not support this feature.");
+        throw new UnsupportedGatewayMethodExeption("Method not Supported. Credo does not support this feature.");
     }
 
     /**
@@ -122,7 +122,7 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function transfer(array $data): array
     {
-        throw new UnsupportedGatewayMethodException("Method not Supported. Credo does not support this feature.");
+        throw new UnsupportedGatewayMethodExeption("Method not Supported. Credo does not support this feature.");
     }
 
     /**
@@ -130,7 +130,7 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function verifyAccountNumber(array $request): array
     {
-        throw new UnsupportedGatewayMethodException("Method not Supported. Credo does not support this feature.");
+        throw new UnsupportedGatewayMethodExeption("Method not Supported. Credo does not support this feature.");
     }
 
     /**

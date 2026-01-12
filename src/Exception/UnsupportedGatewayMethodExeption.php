@@ -7,4 +7,4 @@ use Exception;
 /**
  * Methods that are not supported by a Payment Gateway e.g verifyAccountNumber, getBanks etc.
  */
-class UnsupportedGatewayMethodException extends Exception {}
+class UnsupportedGatewayMethodExeption extends Exception {}
