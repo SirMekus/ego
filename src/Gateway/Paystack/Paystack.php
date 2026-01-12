@@ -2,9 +2,10 @@
 
 namespace Emmy\Ego\Gateway\Paystack;
 
+// use Exception;
+use Emmy\Ego\Trait\Http;
 use Illuminate\Http\Request;
 use Emmy\Ego\Gateway\Realm\Tollgate;
-use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 
 class Paystack extends Tollgate implements PaymentGatewayInterface
@@ -56,6 +57,28 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 		}
 
 		return $this->builder;
+	}
+
+	public function prepareForTransfer(array $data): array
+	{
+		$type = searchArray('recipient_type', $data);
+		$name = searchArray('account_name', $data);
+		$accountNumber = searchArray('account_number', $data);
+		$bankCode = searchArray('bank_code', $data);
+		$reference = searchArray('reference', $data);
+		$amount = searchArray('amount', $data);
+		$description = searchArray('description', $data);
+
+		$this->setType($type);
+		$this->setName($name);
+		$this->setAccountNumber($accountNumber);
+		$this->setBankCode($bankCode);
+		$this->setReference($reference);
+		$this->setAmount($amount);
+		$this->setReason($description);
+
+		return $this->builder;
+
 	}
 
 	public function getBanks(string $countryCode=""): array
@@ -146,16 +169,24 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 		// User can do whatever at this junction
 	}
 
-	public function verifyPayment(array|string $paystackData): array
+	public function verifyPayment(array|string $paystackData, ?string $paymentType=null): array
 	{	
+		$route = 'transaction';
+		if($paymentType){
+			$route = match($paymentType){
+				'transaction', 'deposit' => 'transaction',
+				'transfer', 'bank_transfer' => 'transfer',
+				default => throw new \Exception("Payment type not supported. \n Supported types are: transaction => For confirming payment by customers; transfer (or 'bank_transfer') => For confirming payment by transfer")
+			};
+		}
 		if (is_array($paystackData)) {
 			if (isset($paystackData['data']['trxref']) || isset($paystackData['trxref'])) {
 				$paymentReference = $paystackData['data']['trxref'] ?? isset($paystackData['trxref']);
-				$status = $this->get("transaction/verify/{$paymentReference}");
+				$status = $this->get("$route/verify/{$paymentReference}");
 			}
 		}
 		else{
-			$status = $this->get("transaction/verify/".$paystackData);
+			$status = $this->get("$route/verify/".$paystackData);
 		}
 		return $status;
 	}

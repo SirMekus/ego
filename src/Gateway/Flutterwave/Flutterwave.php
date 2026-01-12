@@ -52,6 +52,11 @@ class Flutterwave extends Tollgate implements PaymentGatewayInterface
 		return $this->builder;
 	}
 
+	public function prepareForTransfer(array $data): array
+	{
+		return $data;
+	}
+
 	public function getBanks(string $countryCode="NG"): array
 	{
         $supportedCountries = ['NG', 'KE', 'UG', 'GH', 'ZA'];
@@ -103,7 +108,7 @@ class Flutterwave extends Tollgate implements PaymentGatewayInterface
         }
 	}
 
-	public function verifyPayment(array|string $payload): array
+	public function verifyPayment(array|string $payload, ?string $paymentType=null): array
 	{	
 		if (is_array($payload)) {
 			if (

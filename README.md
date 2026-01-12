@@ -1,6 +1,6 @@
 ## About Ego
 
-Ego ("money") is an all-in-one payment gateway library for the PHP (Laravel) community. It is designed to bring together all the possible payment gateways under one "umbrella" via a defined set of interface covering regular/day-to-day business/user goals. C
+Ego ("money") is an all-in-one payment gateway library for the PHP (Laravel) community. It is designed to bring together all the possible payment gateways under one "umbrella" via a defined set of interface covering regular/day-to-day business/user goals.
 
 With this library, you don't need to worry about switching between different payment gateways; just check it up here, and if it's available, via the guaranteed set of interfaces, use it straight up as it covers simple everyday use cases. 
 
@@ -67,17 +67,24 @@ $response = $paymentFactory->pay($data);
     //Helps to create the appropriate payload when you pass it an array containing the values the target gateway expects. The underlying payment gateway class will determine how many of the 'important' payloads it will set.
     public function prepareForPayment(array $data): array;
 
+    //Helps to create the appropriate payload when you pass it an array containing the values the target gateway expects. The underlying payment gateway class will determine how many of the 'important' payloads it will set.
+    public function prepareForTransfer(array $data): array;
+
     //To make a payment or deposit
     public function pay(array $array): array;
 
-    //To verify a payment or deposit
-    public function verifyPayment(array|string $array): array;
+    /**To verify a payment or deposit or transfer. The value it returns is dependent on the underlying 
+     * payment gateway. 
+     * 
+     * $paymentType is optional, and can be defined by your implementation. We intentionally avoided using 
+     * Enums for this so that each implementation can define its own. Typically, an error will be thrown if 
+     * the payment type is not supported.
+     * To verify a webhook. You can use it as-is in your application's webhook endpoint. If the webhook is 
+     * valid, it will continue to execute your script else it fails with a 404.
+    */
+    public function verifyPayment(array|string $array, ?string $paymentType=null): array;
 
-    //To verify a webhook. You can use it as-is in your application's webhook endpoint. If the webhook is valid, it will continue to execute your script else it fails with a 404.
     public function verifyWebhook(Request $request): void;
-
-    //After verifying your webhook, it can then run another verification of payment. The value it returns is dependent on the underlying payment gateway.
-    public function handleWebhook(array $request): array;
 
     //To fetch a list of available banks the underlying payment gateway supports
     public function getBanks(string $countryCode=""): array;
@@ -105,11 +112,11 @@ Also, instead of manually crafting or passing the paramters, you can "build" the
  $response = $paymentFactory->pay();
 ```
 
-Methods starting with the `set` keyword are 'magical', and represents a 'payload item'. The parameter acts as the value. When the `pay` method is then called without any parameter, it takes from the payload already built using the magic methods.
+Methods starting with the `set` keyword are 'magical', and represents a 'payload item'. The parameter acts as the value. When the `pay` or `transfer` method is then called without any parameter, it takes from the payload already built using the magic methods.
 
-Alternatively, if you already have an array (say from submitted form data), instead of building the payload, you can just dump it into the library via the `prepareForPayment()` method and the library will automatically build it for you. Even if the array is nested, it will fetch the first matching key/value pair required to create a request payload. This means that a model (that has been turned into an array can be passed to it as well).
+Alternatively, if you already have an array (say from submitted form data), instead of building the payload, you can just dump it into the library via the `prepareForPayment()` or `prepareForTransfer` method and the library will automatically build it for you. Even if the array is nested, it will fetch the first matching key/value pair required to create a request payload. This means that a model (that has been turned into an array can be passed to it as well).
 
->NB: How the payload is built is dependent on the underlying payment gateway. A gateway may require 5 parameters while the contributor of the particular payment gateway feature (in this package) may just cater for 2 in the `prepareForPayment()` method. If the remaining 3 are important, it is recommended you manually set the payload instead.
+>NB: How the payload is built is dependent on the underlying payment gateway. A gateway may require 5 parameters while the contributor of the particular payment gateway feature (in this package) may just cater for 2 in the `prepareForPayment()` or `prepareForTransfer` method. If the remaining 3 are important, it is recommended you manually set the payload instead.
 
  E.g:
 ```php 
@@ -123,7 +130,7 @@ The method wil extract the 'minimal' request parameters (or payload) needed to i
 
 However, it is possible that you might want to interact with the underlying payment gateway class directly. This may be because the payment gateway class (integrated in this package) adds some method(s) that may not be available in the general interface above. 
 
-For instance, if the underlying payment gateway class has a method `createInvoice` which is not defined in the above interface, it can't be accessed directly from the `PaymentFactory` class. You can do this like so instead:
+For instance, if the underlying payment gateway class has a method `createInvoice` which is not defined in the above interface, it can't be accessed directly from the `PaymentFactory` class. You can do this instead:
 
 ```php
 $paymentFactory = new PaymentFactory();
@@ -133,7 +140,7 @@ $gateway->createInvoice();
 //continue operation
 ```
 
-If you have a gateway class you already use with some important methods you may have already created, you can swap our implementation with yours in the 'providers' section of the **ego.php** config file. But it must implement the **'PaymentGatewayInterface'**. One way to do it is to extend our own class.
+If you have a gateway class you already use with some important methods you may have already created, you can swap our implementation with yours in the 'providers' section of the **ego.php** config file. But it must implement the **'PaymentGatewayInterface'**. One way to do it is to extend our own class (and override the methods you need if necessary).
 
 The typical structure of the **ego.php** config file is shown below:
 
@@ -182,6 +189,15 @@ When using the `prepareForPayment($array)` method, the following will be extract
 - metadata
 - reference
 
+When using the `prepareForTransfer($array)` method, the following will be extracted from the array passed in as a parameter (so make sure they're set at least):
+- recipient_type
+- account_name
+- account_number
+- bank_code
+- reference
+- amount
+- description
+
 ### Case 2:
 In addition, on Paystack, you can actually charge customers via directing them to an [authorization URL](https://paystack.com/docs/api/transaction/#initialize) or charging them directly via an [authorization code](https://paystack.com/docs/api/transaction/#charge-authorization). You don't need to worry about any of these when using the package; the `pay()` method is all you need to make any transaction or payment. 
 
@@ -208,16 +224,16 @@ The following methods are available for Stripe in this package:
 - All the methods defined in the interface
 
 ## Webhook Strategy
-Since this package implements methods that verify/handle webhook requests/payloads, one way of using the same route for all possible payment gateway you support is shown below:
+Since this package implement a method that verifies webhook requests/payloads, one way of using the same route for all possible payment gateway you support is shown below:
 ### Step 1: Create a dynamic route
 ```php
 //web.php
 ...
 //Give it any name but observe the 'dynamic' path there.
-Route::post('money/na/water/webhook/{gateway}', App\Http\Controllers\Dashboard\WebhookController::class)->name('payment.webhook');
+Route::post('money/na/water/webhook/{gateway}', App\Http\Controllers\Dashboard\WebhookController::class);
 ```
 
-The value assigned to the dynamic part of the URL above should match with any of the supported payment gateways which can be gotten in the `ego.php` config file (in the 'providers' section).
+> The value assigned to the dynamic part of the URL above should match with any of the supported payment gateways which can be gotten in the `ego.php` config file (in the 'providers' section).
 
 ### Step 2: Handle the payload
 ```php
@@ -230,7 +246,8 @@ class WebhookController extends Controller
         $payload = $request->json()->all();
         $gateway->verifyWebhook($request);
 
-        //handle the payload. Ideally, via throwing an event.
+        //handle the payload. Ideally, via firing an event to prevent blocking (especially from long-running tasks).
+
         return response()->json();
     }
 }

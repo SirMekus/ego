@@ -14,11 +14,14 @@ interface PaymentGatewayInterface
     //Helps to create the appropriate payload when you pass it an array containing the values the target gateway expects. The underlying payment gateway class will determine how many of the 'important' payloads it will set.
     public function prepareForPayment(array $data): array;
 
+    //Helps to create the appropriate payload when you pass it an array containing the values the target gateway expects. The underlying payment gateway class will determine how many of the 'important' payloads it will set.
+    public function prepareForTransfer(array $data): array;
+
     //To make a payment or deposit
     public function pay(array $array): array;
 
     //To verify a payment or deposit
-    public function verifyPayment(array|string $array): array;
+    public function verifyPayment(array|string $array, ?string $paymentType=null): array;
 
     //To verify a webhook. You can use it as-is in your application's webhook endpoint. If the webhook is valid, it will continue to execute your script else it fails with a 404.
     public function verifyWebhook(Request $request): void;

@@ -61,6 +61,11 @@ class Stripe extends Tollgate implements PaymentGatewayInterface
 		return $this->builder;
 	}
 
+	public function prepareForTransfer(array $data): array
+	{
+		return $data;
+	}
+
 	public function getBanks(string $countryCode="NG"): array
 	{
 		return [];
@@ -137,7 +142,7 @@ class Stripe extends Tollgate implements PaymentGatewayInterface
 		}
 	}
 
-	public function verifyPayment(array|string $payload): array
+	public function verifyPayment(array|string $payload, ?string $paymentType=null): array
 	{
 		$this->createConnection(true);
 		if (is_array($payload)) {

@@ -77,6 +77,11 @@ class Credo extends Tollgate implements PaymentGatewayInterface
         return $this->builder;
     }
 
+    public function prepareForTransfer(array $data): array
+	{
+		return $data;
+	}
+
     /**
      * @inheritDoc
      */
@@ -131,7 +136,7 @@ class Credo extends Tollgate implements PaymentGatewayInterface
     /**
      * @inheritDoc
      */
-    public function verifyPayment(array|string $credoData): array
+    public function verifyPayment(array|string $credoData, ?string $paymentType=null): array
     {
         if (is_array($credoData)) {
             if (isset($credoData['data']['transRef']) || isset($credoData['transRef'])) {

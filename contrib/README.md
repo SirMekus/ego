@@ -6,8 +6,10 @@ Please review the available methods in the interface, implement them and extend 
 
 For instance, to create a new payment gateway API, you should:
 - Extend the `TollGate` class
-- Implement the classes in the `PaymentGatewayInterface` interface
+- Implement the classes in the `PaymentGatewayInterface` interface (for the methods that your integration may not support, you can just throw an exception instead even as you make sure the method exists in your class)
 - Throw a custom error or any of the ones defined in the **'Exceptions'** directory  when necessary.
 - Add a new entry required to interact with your class in the **'ego.php'** file in the **config** directory. The user will then have to set up the credentials (or environment variables)
 
-Kindly review any of the current implementations on how to create your own implementation.
+Kindly review any of the current implementations on how to create your own implementation. Particularly, the `Paystack` classes as it is the most complete implementation of the interface.
+
+> If you have any questions, please don't hesitate to contact me. I'm always happy to help.

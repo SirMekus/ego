@@ -51,6 +51,10 @@ class PaymentFactory implements PaymentGatewayInterface
     {
         return $this->paymentGateway->prepareForPayment($array);
     }
+    public function prepareForTransfer(array $array): array
+    {
+        return $this->paymentGateway->prepareForTransfer($array);
+    }
     public function pay(array $array = []): array
     {
         return $this->paymentGateway->pay($array);
@@ -59,9 +63,9 @@ class PaymentFactory implements PaymentGatewayInterface
     {
         return $this->paymentGateway->transfer($data);
     }
-    public function verifyPayment(array|string $reference = []): array
+    public function verifyPayment(array|string $reference = [], ?string $paymentType=null): array
     {
-        return $this->paymentGateway->verifyPayment($reference);
+        return $this->paymentGateway->verifyPayment($reference, $paymentType);
     }
     public function verifyWebhook(Request $request): void
     {
