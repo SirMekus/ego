@@ -4,6 +4,8 @@ return [
     //Your app's default payment gateway. It must already exist in the 'providers' section below, and has its credentials setup as required.
     'default' => 'paystack',
 
+    'verify_webhook' => env('EGO_VERIFY_WEBHOOK', true), //Whether to verify webhooks or not. If set to false, the package will not verify the authenticity of incoming webhooks. It is recommended to keep this set to true for security reasons.
+
     'credentials' => [
         'paystack' => [
             'secret_key' => env('PAYSTACK_SECRET_KEY'),

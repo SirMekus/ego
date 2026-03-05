@@ -3,14 +3,15 @@
 namespace Emmy\Ego\Gateway\Paystack;
 
 // use Exception;
-use Emmy\Ego\Trait\Http;
-use Illuminate\Http\Request;
 use Emmy\Ego\Gateway\Realm\Tollgate;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
+use Emmy\Ego\Trait\Http;
+use Emmy\Ego\Trait\Webhooker;
+use Illuminate\Http\Request;
 
 class Paystack extends Tollgate implements PaymentGatewayInterface
 {
-	use Http;
+	use Http, Webhooker;
 	protected $secretKey;
 	protected $baseUrl = 'https://api.paystack.co/';
 
@@ -155,6 +156,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 
 	public function verifyWebhook(Request $request): void
 	{
+		$this->checkIfValidationIsNecessary();
 		$signature = $request->header('x-paystack-signature');
 		if (
 			(strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') ||

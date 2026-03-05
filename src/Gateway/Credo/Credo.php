@@ -3,14 +3,14 @@
 namespace Emmy\Ego\Gateway\Credo;
 
 use Emmy\Ego\Exception\UnsupportedGatewayMethodExeption;
-use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Gateway\Realm\Tollgate;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
+use Emmy\Ego\Trait\Http;
+use Emmy\Ego\Trait\Webhooker;
 
 class Credo extends Tollgate implements PaymentGatewayInterface
 {
-
-    use Http;
+    use Http, Webhooker;
     protected $secretKey;
     protected $baseUrl = 'https://api.credocentral.com/';
 
@@ -154,6 +154,7 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function verifyWebhook(\Illuminate\Http\Request $request): void
     {
+        $this->checkIfValidationIsNecessary();
         $signature = $request->header('x-credo-signature');
         if (
             (strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') ||
