@@ -22,12 +22,20 @@ return [
             'account_id' => env('STRIPE_ACCOUNT_ID'),
             'client_id' => env('STRIPE_CLIENT_ID'),
         ],
+        'nomba' => [
+            'client_id' => env('NOMBA_CLIENT_ID'),
+            'secret_key' => env('NOMBA_SECRET_KEY'),
+            'account_id' => env('NOMBA_ACCOUNT_ID'),
+            'signature_key' => env('NOMBA_SIGNATURE_KEY'),
+            'base_url' => env('NOMBA_BASE_URL')
+        ]
     ],
 
     'providers' => [
         'paystack' => Emmy\Ego\Gateway\Paystack\Paystack::class,
         'flutterwave' => Emmy\Ego\Gateway\Flutterwave\Flutterwave::class,
         'stripe' => Emmy\Ego\Gateway\Stripe\Stripe::class,
-        "credo" => Emmy\Ego\Gateway\Credo\Credo::class
+        "credo" => Emmy\Ego\Gateway\Credo\Credo::class,
+        'nomba' => Emmy\Ego\Gateway\Nomba\Nomba::class,
     ],
 ];

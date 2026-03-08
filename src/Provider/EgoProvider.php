@@ -11,7 +11,9 @@ class EgoProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/ego.php', 'ego');
+        $packageConfig = require __DIR__.'/../config/ego.php';
+        $appConfig = $this->app['config']->get('ego', []);
+        $this->app['config']->set('ego', array_replace_recursive($packageConfig, $appConfig));
     }
 
     /**

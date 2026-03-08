@@ -2,7 +2,6 @@
 
 namespace Emmy\Ego\Gateway\Paystack;
 
-// use Exception;
 use Emmy\Ego\Gateway\Realm\Tollgate;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Trait\Http;
@@ -103,7 +102,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 			$this->payViaAuthorizationUrl($payload);
 	}
 
-	protected function payViaAuthorizationUrl(array $data)
+	protected function payViaAuthorizationUrl(array $data): array
 	{
 		$response = $this->post('transaction/initialize', $data);
 		$url = $response['data']['authorization_url'];
@@ -116,7 +115,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 		];
 	}
 
-	protected function payViaAuthorizationCode(array $data): array|object
+	protected function payViaAuthorizationCode(array $data): array
 	{
 		$response = $this->post('transaction/charge_authorization', $data);
 		unset($response['status'], $response['message']);
