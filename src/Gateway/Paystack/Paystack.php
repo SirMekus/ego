@@ -21,7 +21,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 
 	public function setKey(string|array $key):void
 	{
-		$this->secretKey =  $key;
+		$this->secretKey = $key;
 	}
 
 	public function prepareForPayment(array $data): array
@@ -177,7 +177,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 			$route = match($paymentType){
 				'transaction', 'deposit' => 'transaction',
 				'transfer', 'bank_transfer' => 'transfer',
-				default => throw new \Exception("Payment type not supported. \n Supported types are: transaction => For confirming payment by customers; transfer (or 'bank_transfer') => For confirming payment by transfer")
+				default => throw new \Exception("Payment type not supported. \n Supported types are: transaction => For confirming payment by customers; \n transfer (or 'bank_transfer') => For confirming payment by transfer")
 			};
 		}
 		if (is_array($paystackData)) {

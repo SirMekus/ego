@@ -38,8 +38,6 @@ trait Http
 	{
 		$this->createConnection();
 		$url = $this->getCleanPath($path);
-		// unset($headers['accountId']);
-		// dd($url, $method, $data, $headers);
 		$response = match (strtoupper($method)) {
                 'GET' => $this->http->withHeaders($headers)->get($url, $data),
                 'POST' => $this->http->withHeaders($headers)->post($url, $data),
@@ -47,9 +45,7 @@ trait Http
                 'DELETE' => $this->http->withHeaders($headers)->delete($url, $data),
                 default => throw new Exception("Unsupported HTTP method: {$method}")
             };
-			// dd($response->body());
 		$response = json_decode($response, true);
-		// dd($response);
         $this->checkForError($response);
 		
 		return $response;
