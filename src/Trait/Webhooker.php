@@ -4,11 +4,11 @@ namespace Emmy\Ego\Trait;
 
 trait Webhooker
 {
-    protected $http;
-	public function checkIfValidationIsNecessary():void
+	public function shouldValidateWebhook():bool
 	{
-		if( !config('ego.verify_webhook', true) ){
-			return;
+		if(config('ego.verify_webhook') ){
+			return true;
 		}
+		return false;
 	}
 }

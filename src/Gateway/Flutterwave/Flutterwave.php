@@ -101,7 +101,9 @@ class Flutterwave extends Tollgate implements PaymentGatewayInterface
 
 	public function verifyWebhook(Request $request): void
 	{
-		$this->checkIfValidationIsNecessary();
+		if(!$this->shouldValidateWebhook()){
+			return;
+		};
 		$secretHash = config('ego.credentials.flutterwave.secretHash');
         $signature = $request->header('verif-hash');
         if ( ! $signature || ($signature !== $secretHash)) {

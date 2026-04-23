@@ -3,7 +3,6 @@
 namespace Emmy\Ego\Gateway\Fincra;
 
 use Emmy\Ego\Exception\ApiException;
-use Emmy\Ego\Exception\InvalidRecipientException;
 use Emmy\Ego\Gateway\Realm\Tollgate;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Trait\Http;
@@ -158,7 +157,9 @@ class Fincra extends Tollgate implements PaymentGatewayInterface
 
 	public function verifyWebhook(Request $request): void
 	{
-		$this->checkIfValidationIsNecessary();
+		if(!$this->shouldValidateWebhook()){
+			return;
+		};
 		$secretHash = config('ego.credentials.fincra.secretHash');
         $signature = $request->header('verif-hash');
         if ( ! $signature || ($signature !== $secretHash)) {

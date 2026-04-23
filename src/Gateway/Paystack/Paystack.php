@@ -155,7 +155,9 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 
 	public function verifyWebhook(Request $request): void
 	{
-		$this->checkIfValidationIsNecessary();
+		if(!$this->shouldValidateWebhook()){
+			return;
+		};
 		$signature = $request->header('x-paystack-signature');
 		if (
 			(strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') ||

@@ -154,7 +154,9 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function verifyWebhook(\Illuminate\Http\Request $request): void
     {
-        $this->checkIfValidationIsNecessary();
+        if(!$this->shouldValidateWebhook()){
+			return;
+		};
         $signature = $request->header('x-credo-signature');
         if (
             (strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') ||

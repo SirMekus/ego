@@ -10,7 +10,6 @@ use Emmy\Ego\Trait\NombaAuth;
 use Emmy\Ego\Trait\Webhooker;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class Nomba extends Tollgate implements PaymentGatewayInterface
@@ -216,7 +215,9 @@ class Nomba extends Tollgate implements PaymentGatewayInterface
 
     public function verifyWebhook(Request $request): void
 	{
-		$this->checkIfValidationIsNecessary();
+		if(!$this->shouldValidateWebhook()){
+			return;
+		};
         
 		$signatureKey = config('ego.credentials.nomba.signature_key');
 
