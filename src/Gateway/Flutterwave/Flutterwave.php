@@ -5,12 +5,13 @@ namespace Emmy\Ego\Gateway\Flutterwave;
 use Emmy\Ego\Exception\ApiException;
 use Emmy\Ego\Exception\InvalidRecipientException;
 use Emmy\Ego\Gateway\Realm\Tollgate;
+use Emmy\Ego\Interface\BankingInterface;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Trait\Webhooker;
 use Illuminate\Http\Request;
 
-class Flutterwave extends Tollgate implements PaymentGatewayInterface
+class Flutterwave extends Tollgate implements PaymentGatewayInterface, BankingInterface
 {
 	use Http, Webhooker;
 	protected $secretKey;

@@ -122,6 +122,7 @@ class Stripe extends Tollgate implements PaymentGatewayInterface
 			throw new ApiException("Please provide a 'destination' property in the request which represents the ID of a connected Stripe account");
 		}
 
+		$this->createConnection(true);
 		$transferStatus = $this->post('transfers', $requestPayload);
 		return $transferStatus;
 	}

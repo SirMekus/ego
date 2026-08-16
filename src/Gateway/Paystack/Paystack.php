@@ -3,12 +3,13 @@
 namespace Emmy\Ego\Gateway\Paystack;
 
 use Emmy\Ego\Gateway\Realm\Tollgate;
+use Emmy\Ego\Interface\BankingInterface;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Trait\Webhooker;
 use Illuminate\Http\Request;
 
-class Paystack extends Tollgate implements PaymentGatewayInterface
+class Paystack extends Tollgate implements PaymentGatewayInterface, BankingInterface
 {
 	use Http, Webhooker;
 	protected $secretKey;
@@ -182,6 +183,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface
 				default => throw new \Exception("Payment type not supported. \n Supported types are: transaction => For confirming payment by customers; \n transfer (or 'bank_transfer') => For confirming payment by transfer")
 			};
 		}
+		$status = [];
 		if (is_array($paystackData)) {
 			if (isset($paystackData['data']['trxref']) || isset($paystackData['trxref'])) {
 				$paymentReference = $paystackData['data']['trxref'] ?? isset($paystackData['trxref']);

@@ -4,13 +4,14 @@ namespace Emmy\Ego\Gateway\Fincra;
 
 use Emmy\Ego\Exception\ApiException;
 use Emmy\Ego\Gateway\Realm\Tollgate;
+use Emmy\Ego\Interface\BankingInterface;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Trait\Webhooker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http as IlluminateHttp;
 
-class Fincra extends Tollgate implements PaymentGatewayInterface
+class Fincra extends Tollgate implements PaymentGatewayInterface, BankingInterface
 {
 	use Http, Webhooker;
 	protected $secretKey;

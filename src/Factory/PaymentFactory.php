@@ -2,11 +2,12 @@
 
 namespace Emmy\Ego\Factory;
 
-use Illuminate\Http\Request;
-use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Exception\UnsupportedGatewayException;
+use Emmy\Ego\Interface\BankingInterface;
+use Emmy\Ego\Interface\PaymentGatewayInterface;
+use Illuminate\Http\Request;
 
-class PaymentFactory implements PaymentGatewayInterface
+class PaymentFactory implements PaymentGatewayInterface, BankingInterface
 {
     protected $paymentGateway;
 

@@ -4,6 +4,7 @@ namespace Emmy\Ego\Gateway\Nomba;
 
 use Emmy\Ego\Exception\ApiException;
 use Emmy\Ego\Gateway\Realm\Tollgate;
+use Emmy\Ego\Interface\BankingInterface;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Requests\NombaWebhookRequest;
 use Emmy\Ego\Trait\NombaAuth;
@@ -12,7 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class Nomba extends Tollgate implements PaymentGatewayInterface
+class Nomba extends Tollgate implements PaymentGatewayInterface, BankingInterface
 {
     use NombaAuth, Webhooker;
     /**

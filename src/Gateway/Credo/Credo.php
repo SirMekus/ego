@@ -4,11 +4,12 @@ namespace Emmy\Ego\Gateway\Credo;
 
 use Emmy\Ego\Exception\UnsupportedGatewayMethodExeption;
 use Emmy\Ego\Gateway\Realm\Tollgate;
+use Emmy\Ego\Interface\BankingInterface;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Trait\Webhooker;
 
-class Credo extends Tollgate implements PaymentGatewayInterface
+class Credo extends Tollgate implements PaymentGatewayInterface, BankingInterface
 {
     use Http, Webhooker;
     protected $secretKey;
@@ -138,6 +139,7 @@ class Credo extends Tollgate implements PaymentGatewayInterface
      */
     public function verifyPayment(array|string $credoData, ?string $paymentType=null): array
     {
+        $status = [];
         if (is_array($credoData)) {
             if (isset($credoData['data']['transRef']) || isset($credoData['transRef'])) {
                 $transRef = $credoData['data']['transRef'] ?? isset($credoData['transRef']);

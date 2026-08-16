@@ -4,12 +4,13 @@ namespace Emmy\Ego\Gateway\BudPay;
 
 use Emmy\Ego\Exception\ApiException;
 use Emmy\Ego\Gateway\Realm\Tollgate;
+use Emmy\Ego\Interface\BankingInterface;
 use Emmy\Ego\Interface\PaymentGatewayInterface;
 use Emmy\Ego\Trait\Http;
 use Emmy\Ego\Trait\Webhooker;
 use Illuminate\Http\Request;
 
-class BudPay extends Tollgate implements PaymentGatewayInterface
+class BudPay extends Tollgate implements PaymentGatewayInterface, BankingInterface
 {
     use Http, Webhooker;
 
