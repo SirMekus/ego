@@ -84,7 +84,7 @@ class Paystack extends Tollgate implements PaymentGatewayInterface, BankingInter
 
 	public function getBanks(string $countryCode=""): array
 	{
-		$response = $this->get('bank');
+		$response = $this->get('bank', ['include_nip_sort_code'=>'true']);
 		return $response;
 	}
 	public function verifyAccountNumber(array $request=[]): array
