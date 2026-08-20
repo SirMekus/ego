@@ -259,6 +259,11 @@ class BudPay extends Tollgate implements PaymentGatewayInterface, BankingInterfa
         );
     }
 
+    public function verifyTransaction(string $reference): array
+	{	
+		return $this->verifyPayment($reference, 'transaction');
+	}
+
     // Resolves the BudPay reference from the given payload.
     private function resolveBudPayReference(array $payload): ?string
     {

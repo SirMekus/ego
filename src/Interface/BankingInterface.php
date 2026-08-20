@@ -17,4 +17,6 @@ interface BankingInterface
 
     //To run a transfer/withdrawal transaction based on the payment gateway
     public function transfer(array $data): array;
+
+    public function verifyTransaction(string $reference): array;
 }

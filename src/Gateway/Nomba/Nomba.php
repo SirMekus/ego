@@ -165,6 +165,11 @@ class Nomba extends Tollgate implements PaymentGatewayInterface, BankingInterfac
         ];
     }
 
+    public function verifyTransaction(string $reference): array
+	{	
+		return $this->verifyPayment($reference, 'transfer');
+	}
+
     public function prepareForTransfer(array $data): array
 	{
 		$accountNumber = searchArray(['accountNumber', 'account_number'], $data);

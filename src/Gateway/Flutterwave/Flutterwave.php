@@ -141,10 +141,17 @@ class Flutterwave extends Tollgate implements PaymentGatewayInterface, BankingIn
 			$this->verifyById($paymentReference, $header) :
 			$this->verifyByReference($paymentReference, $header);
 	}
+
+	public function verifyTransaction(string $reference): array
+	{	
+		return $this->verifyPayment($reference);
+	}
+
 	public function verifyById(string|int $id, array $header)
 	{
 		return $this->get("transactions/{$id}/verify", headers:$header);
 	}
+	
 	public function verifyByReference(string $reference, array $header)
 	{
 		return $this->get(

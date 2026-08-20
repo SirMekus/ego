@@ -68,6 +68,10 @@ class PaymentFactory implements PaymentGatewayInterface, BankingInterface
     {
         return $this->paymentGateway->verifyPayment($reference, $paymentType);
     }
+    public function verifyTransaction(string $reference): array
+	{	
+		return $this->verifyPayment($reference);
+	}
     public function verifyWebhook(Request $request): void
     {
         $this->paymentGateway->verifyWebhook($request);

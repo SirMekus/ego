@@ -168,6 +168,10 @@ class Stripe extends Tollgate implements PaymentGatewayInterface
 
 		return $this->get("checkout/sessions/{$paymentReference}");
 	}
+	public function verifyTransaction(string $reference): array
+	{	
+		return $this->verifyPayment($reference);
+	}
     public function checkForError(array $response):void
     {
         if (isset($response['error'])) {

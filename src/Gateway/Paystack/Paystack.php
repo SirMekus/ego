@@ -195,4 +195,9 @@ class Paystack extends Tollgate implements PaymentGatewayInterface, BankingInter
 		}
 		return $status;
 	}
+
+	public function verifyTransaction(string $reference): array
+	{	
+		return $this->verifyPayment($reference, 'transfer');
+	}
 }

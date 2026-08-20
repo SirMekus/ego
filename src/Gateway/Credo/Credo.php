@@ -151,6 +151,11 @@ class Credo extends Tollgate implements PaymentGatewayInterface, BankingInterfac
         return $status;
     }
 
+    public function verifyTransaction(string $reference): array
+	{	
+		return $this->verifyPayment($reference);
+	}
+
     /**
      * @inheritDoc
      */
